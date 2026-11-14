@@ -1,0 +1,12 @@
+<Window x:Class="EtwExplorer.MainWindow"
+		xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:view="using:EtwExplorer.Views"
+		Title="ETW Explorer" Width="1000" Height="700" MinWidth="720" MinHeight="480">
+  <Window.KeyBindings>
+	<KeyBinding Gesture="Ctrl+O" Command="{Binding OpenRegisteredCommand}" />
+	<KeyBinding Gesture="Ctrl+S" Command="{Binding SaveXmlCommand}" />
+	<KeyBinding Gesture="Ctrl+F4" Command="{Binding CloseCommand}" />
+  </Window.KeyBindings>
+  <view:MainView />
+</Window>

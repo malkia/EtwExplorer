@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net11.0-windows</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <UseWPF>true</UseWPF>
     <AssemblyTitle>EtwExplorer</AssemblyTitle>
-    <ApplicationIcon>app.ico</ApplicationIcon>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,12 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Icons\*.ico" />
-    <Resource Include="app.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MahApps.Metro" Version="2.4.11" />
+    <PackageReference Include="Avalonia" Version="12.1.2" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.2" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.2" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.1.2" />
     <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="4.0.0" />
     <PackageReference Include="Prism.Core" Version="9.0.537" />
   </ItemGroup>

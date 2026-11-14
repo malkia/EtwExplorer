@@ -1,12 +1,8 @@
-﻿using System.Windows.Controls;
+﻿using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 
 namespace EtwExplorer.Views {
-	/// <summary>
-	/// Interaction logic for KeywordsTabView.xaml
-	/// </summary>
 	public partial class KeywordsTabView : UserControl {
-		public KeywordsTabView() {
-			InitializeComponent();
-		}
+		public KeywordsTabView() => AvaloniaXamlLoader.Load(this);
 	}
 }

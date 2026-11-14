@@ -1,21 +1,22 @@
-﻿using EtwExplorer.Infrastructure;
+﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Markup.Xaml;
+using EtwExplorer.Infrastructure;
 using EtwExplorer.ViewModels;
-using System.Windows;
 
 namespace EtwExplorer {
-	/// <summary>
-	/// Interaction logic for App.xaml
-	/// </summary>
 	public partial class App : Application {
-		protected override void OnStartup(StartupEventArgs e) {
-			base.OnStartup(e);
+		public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
-			var ui = new UIServicesDefaults();
-			var vm = new MainViewModel(ui);
-			var win = new MainWindow { DataContext = vm };
-			win.Show();
-			ui.MessageBoxService.SetOwner(win);
-			ShutdownMode = ShutdownMode.OnLastWindowClose;
+		public override void OnFrameworkInitializationCompleted() {
+			if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
+				var ui = new UIServicesDefaults();
+				var window = new MainWindow { DataContext = new MainViewModel(ui) };
+				ui.MessageBoxService.SetOwner(window);
+				desktop.MainWindow = window;
+			}
+
+			base.OnFrameworkInitializationCompleted();
 		}
 	}
 }

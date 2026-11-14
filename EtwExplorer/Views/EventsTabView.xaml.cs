@@ -1,12 +1,8 @@
-﻿using System.Windows.Controls;
+﻿using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 
 namespace EtwExplorer.Views {
-	/// <summary>
-	/// Interaction logic for EventsTabView.xaml
-	/// </summary>
 	public partial class EventsTabView : UserControl {
-		public EventsTabView() {
-			InitializeComponent();
-		}
+		public EventsTabView() => AvaloniaXamlLoader.Load(this);
 	}
 }

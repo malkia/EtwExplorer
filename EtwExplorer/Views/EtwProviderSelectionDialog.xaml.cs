@@ -1,10 +1,8 @@
-﻿namespace EtwExplorer.Views {
-	/// <summary>
-	/// Interaction logic for EtwProviderSelectionDialog.xaml
-	/// </summary>
-	public partial class EtwProviderSelectionDialog {
-		public EtwProviderSelectionDialog() {
-			InitializeComponent();
-		}
+﻿using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+
+namespace EtwExplorer.Views {
+	public partial class EtwProviderSelectionDialog : Window {
+		public EtwProviderSelectionDialog() => AvaloniaXamlLoader.Load(this);
 	}
 }

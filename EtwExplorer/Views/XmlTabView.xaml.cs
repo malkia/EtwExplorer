@@ -1,12 +1,8 @@
-﻿namespace EtwExplorer.Views {
-	/// <summary>
-	/// Interaction logic for XmlTabView.xaml
-	/// </summary>
-	public partial class XmlTabView {
-		public XmlTabView() {
-			InitializeComponent();
+﻿using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 
-		}
-
+namespace EtwExplorer.Views {
+	public partial class XmlTabView : UserControl {
+		public XmlTabView() => AvaloniaXamlLoader.Load(this);
 	}
 }

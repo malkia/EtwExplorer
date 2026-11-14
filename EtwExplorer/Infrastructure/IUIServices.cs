@@ -1,16 +1,14 @@
-﻿using System.Windows;
+﻿using Avalonia.Controls;
 
 namespace EtwExplorer.Infrastructure {
 	public interface IFileDialogService {
-		/// <returns>The chosen path, or null if the user cancelled.</returns>
-		string? GetFileForOpen(string filter, string? title = null);
-		/// <returns>The chosen path, or null if the user cancelled.</returns>
-		string? GetFileForSave(string filter, string? title = null);
+		Task<string?> GetFileForOpen(string filter, string? title = null);
+		Task<string?> GetFileForSave(string filter, string? title = null);
 	}
 
 	public interface IMessageBoxService {
 		void SetOwner(Window owner);
-		MessageBoxResult ShowMessage(string text, string caption, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
+		Task ShowMessage(string text, string caption);
 	}
 
 	public interface IDialogService {

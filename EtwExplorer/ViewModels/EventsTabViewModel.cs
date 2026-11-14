@@ -1,40 +1,35 @@
-﻿using EtwManifestParsing;
-using System.Windows.Data;
+﻿using Avalonia.Collections;
+using EtwManifestParsing;
 
 namespace EtwExplorer.ViewModels {
 	sealed class EventsTabViewModel : TabViewModelBase {
 		public override string Icon => "/icons/events.ico";
-
 		public override string Header => "Events";
 
-		readonly EtwManifest _manifest;
+		readonly DataGridCollectionView _eventView;
 		public EventsTabViewModel(EtwManifest manifest) {
-			_manifest = manifest;
-			Events = [.. _manifest.Events.Select(evt => new EtwEventViewModel(evt, _manifest))];
+			var events = manifest.Events.Select(evt => new EtwEventViewModel(evt, manifest)).ToArray();
+			_eventView = new DataGridCollectionView(events) { Filter = FilterEvent };
 		}
 
-		public EtwEventViewModel[] Events { get; }
+		public DataGridCollectionView EventView => _eventView;
 
 		string? _searchText;
 		public string? SearchText {
 			get => _searchText;
 			set {
-				if (SetProperty(ref _searchText, value)) {
-					var cvs = CollectionViewSource.GetDefaultView(Events);
-					if (string.IsNullOrWhiteSpace(_searchText))
-						cvs.Filter = null;
-					else {
-						string text = _searchText;
-						cvs.Filter = obj => {
-							var evt = ((EtwEventViewModel)obj).Event;
-							return Matches(evt.Symbol, text) || Matches(evt.Opcode, text) || Matches(evt.Task, text);
-						};
-					}
-				}
+				if (SetProperty(ref _searchText, value))
+					_eventView.Refresh();
 			}
 		}
 
-		// symbol/opcode/task are optional manifest attributes; a missing one simply doesn't match
+		bool FilterEvent(object item) {
+			if (string.IsNullOrWhiteSpace(SearchText))
+				return true;
+			var evt = ((EtwEventViewModel)item).Event;
+			return Matches(evt.Symbol, SearchText) || Matches(evt.Opcode, SearchText) || Matches(evt.Task, SearchText);
+		}
+
 		static bool Matches(string? value, string text) => value?.Contains(text, StringComparison.OrdinalIgnoreCase) == true;
 	}
 }

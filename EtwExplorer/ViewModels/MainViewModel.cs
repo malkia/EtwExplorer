@@ -1,17 +1,17 @@
-﻿using EtwExplorer.Infrastructure;
+﻿using Avalonia.Controls.ApplicationLifetimes;
+using EtwExplorer.Infrastructure;
 using EtwExplorer.Views;
 using EtwManifestParsing;
 using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Diagnostics.Tracing.Session;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Windows;
 using System.Windows.Input;
 
 namespace EtwExplorer.ViewModels {
 	sealed class MainViewModel : BindableBase {
 		public readonly IUIServices UI;
-		ObservableCollection<TabViewModelBase> _tabs = new();
+		readonly ObservableCollection<TabViewModelBase> _tabs = new();
 		public IList<TabViewModelBase> Tabs => _tabs;
 
 		public EtwManifest? Manifest { get; private set; }
@@ -45,7 +45,7 @@ namespace EtwExplorer.ViewModels {
 			AddTabs();
 		}
 
-		private void AddTabs() {
+		void AddTabs() {
 			if (Manifest is { } manifest) {
 				Tabs.Add(new SummaryTabViewModel(manifest));
 				Tabs.Add(new EventsTabViewModel(manifest));
@@ -59,14 +59,23 @@ namespace EtwExplorer.ViewModels {
 			SelectedTab = Tabs.Count > 0 ? Tabs[0] : null;
 		}
 
-		public ICommand ExitCommand => new DelegateCommand(() => Application.Current.Shutdown());
-		public ICommand OpenXmlCommand => new DelegateCommand(() => {
-			var filename = UI.FileDialogService.GetFileForOpen("Xml Files|*.xml", "Open XML Manifest");
-			if (filename == null)
-				return;
-
-			DoOpenFile(filename);
+		public ICommand ExitCommand => new DelegateCommand(() => {
+			if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+				desktop.Shutdown();
 		});
+
+		public ICommand OpenXmlCommand => new DelegateCommand(async () => await OpenXmlAsync());
+
+		async Task OpenXmlAsync() {
+			try {
+				var filename = await UI.FileDialogService.GetFileForOpen("Xml Files|*.xml", "Open XML Manifest");
+				if (filename != null)
+					DoOpenFile(filename);
+			}
+			catch (Exception ex) {
+				await UI.MessageBoxService.ShowMessage($"Error: {ex.Message}", Constants.AppTitle);
+			}
+		}
 
 		public ICommand CloseCommand => new DelegateCommand(DoClose);
 
@@ -78,9 +87,11 @@ namespace EtwExplorer.ViewModels {
 			RaisePropertyChanged(nameof(Manifest));
 		}
 
-		public ICommand OpenRegisteredCommand => new DelegateCommand(() => {
+		public ICommand OpenRegisteredCommand => new DelegateCommand(async () => await OpenRegisteredAsync());
+
+		async Task OpenRegisteredAsync() {
 			var vm = UI.DialogService.CreateDialog<EtwProviderSelectionViewModel, EtwProviderSelectionDialog>();
-			if (vm.ShowDialog() != true || vm.SelectedProvider is not { } provider)
+			if (await vm.ShowDialogAsync() != true || vm.SelectedProvider is not { } provider)
 				return;
 
 			if (vm.CloseCurrentManifest)
@@ -91,10 +102,9 @@ namespace EtwExplorer.ViewModels {
 					xml = RegisteredTraceEventParser.GetManifestForRegisteredProvider(provider.Guid);
 				}
 				catch (ApplicationException ae) {
-					// look for a WMI EventTrace class instead - but throw the original exception otherwise
 					try {
 						DoOpenWmiEventTrace(provider.Guid);
-						UI.MessageBoxService.ShowMessage($"{ae.Message}\n\nShowing WMI EventTrace class details instead.", Constants.AppTitle, MessageBoxButton.OK, MessageBoxImage.Information);
+						await UI.MessageBoxService.ShowMessage($"{ae.Message}\n\nShowing WMI EventTrace class details instead.", Constants.AppTitle);
 					}
 					catch {
 						throw ae;
@@ -112,7 +122,7 @@ namespace EtwExplorer.ViewModels {
 					Mask = info.Value,
 					Message = info.Description
 				}).ToArray();
-				UI.MessageBoxService.ShowMessage($"{e.Message}\nShowing keywords only.", Constants.AppTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
+				await UI.MessageBoxService.ShowMessage($"{e.Message}\nShowing keywords only.", Constants.AppTitle);
 
 				if (vm.CloseCurrentManifest) {
 					DoClose();
@@ -121,21 +131,16 @@ namespace EtwExplorer.ViewModels {
 				}
 				else {
 					var winvm = new MainViewModel(UI, keywords, provider.Name);
-					var win = new MainWindow { DataContext = winvm };
-					win.Show();
+					new MainWindow { DataContext = winvm }.Show();
 				}
 			}
-		});
-
-		private void DoOpenXml(string xml) {
-			DoOpen(ManifestParser.Parse(xml));
 		}
 
-		private void DoOpenWmiEventTrace(Guid provider) {
-			DoOpen(ManifestParser.ParseWmiEventTraceClass(provider));
-		}
+		void DoOpenXml(string xml) => DoOpen(ManifestParser.Parse(xml));
 
-		private void DoOpen(EtwManifest manifest) {
+		void DoOpenWmiEventTrace(Guid provider) => DoOpen(ManifestParser.ParseWmiEventTraceClass(provider));
+
+		void DoOpen(EtwManifest manifest) {
 			if (Manifest == null) {
 				Manifest = manifest;
 				RaisePropertyChanged(nameof(Manifest));
@@ -143,9 +148,7 @@ namespace EtwExplorer.ViewModels {
 				AddTabs();
 			}
 			else {
-				var vm = new MainViewModel(UI, manifest);
-				var win = new MainWindow { DataContext = vm };
-				win.Show();
+				new MainWindow { DataContext = new MainViewModel(UI, manifest) }.Show();
 			}
 		}
 
@@ -155,44 +158,31 @@ namespace EtwExplorer.ViewModels {
 			set => SetProperty(ref _selectedTab, value);
 		}
 
-		private void DoOpenFile(string filename) {
-			try {
-				var manifest = ManifestParser.Parse(File.ReadAllText(filename));
-				if (Manifest == null) {
-					Manifest = manifest;
-					FileName = filename;
-					ProviderName = Manifest.ProviderName;
-					RaisePropertyChanged(nameof(Manifest));
-					AddTabs();
-				}
-				else {
-					var vm = new MainViewModel(UI, manifest);
-					vm.FileName = filename;
-					var win = new MainWindow { DataContext = vm };
-					win.Show();
-				}
-
+		void DoOpenFile(string filename) {
+			var manifest = ManifestParser.Parse(File.ReadAllText(filename));
+			if (Manifest == null) {
+				Manifest = manifest;
+				FileName = filename;
+				ProviderName = Manifest.ProviderName;
+				RaisePropertyChanged(nameof(Manifest));
+				AddTabs();
 			}
-			catch (Exception ex) {
-				UI.MessageBoxService.ShowMessage($"Error: {ex.Message}", Constants.AppTitle);
+			else {
+				var vm = new MainViewModel(UI, manifest) { FileName = filename };
+				new MainWindow { DataContext = vm }.Show();
 			}
 		}
 
-		public DelegateCommand SaveXmlCommand => new DelegateCommand(() => {
-			var filename = UI.FileDialogService.GetFileForSave("XML files|*.xml|All Files|*.*");
-			if (filename == null)
-				return;
-			DoSave(filename);
-		}, () => Manifest != null).ObservesProperty(() => Manifest);
+		public DelegateCommand SaveXmlCommand => new DelegateCommand(async () => await SaveXmlAsync(), () => Manifest != null).ObservesProperty(() => Manifest);
 
-		private void DoSave(string filename) {
-			if (Manifest is not { } manifest)
-				return;
+		async Task SaveXmlAsync() {
 			try {
-				File.WriteAllText(filename, manifest.Xml);
+				var filename = await UI.FileDialogService.GetFileForSave("XML files|*.xml|All Files|*.*");
+				if (filename != null && Manifest is { } manifest)
+					File.WriteAllText(filename, manifest.Xml);
 			}
-			catch (IOException ex) {
-				UI.MessageBoxService.ShowMessage(ex.Message, Constants.AppTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+			catch (Exception ex) {
+				await UI.MessageBoxService.ShowMessage(ex.Message, Constants.AppTitle);
 			}
 		}
 	}

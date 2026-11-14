@@ -1,0 +1,13 @@
+<UserControl x:Class="EtwExplorer.Views.SummaryTabView"
+			 xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Grid Margin="12" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,12,*" RowSpacing="10">
+	<TextBlock Text="Provider Name:" /><TextBlock Grid.Column="2" Text="{Binding ProviderName}" FontWeight="Bold" />
+	<TextBlock Grid.Row="1" Text="Provider GUID:" /><TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding ProviderGuid}" FontWeight="Bold" />
+	<TextBlock Grid.Row="2" Text="Provider Symbol:" /><TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding ProviderSymbol}" FontWeight="Bold" />
+	<TextBlock Grid.Row="3" Text="Keywords:" /><TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding KeywordCount}" FontWeight="Bold" />
+	<TextBlock Grid.Row="4" Text="Events:" /><TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding EventCount}" FontWeight="Bold" />
+	<TextBlock Grid.Row="5" Text="Tasks:" /><TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding TaskCount}" FontWeight="Bold" />
+	<TextBlock Grid.Row="6" Text="Templates:" /><TextBlock Grid.Row="6" Grid.Column="2" Text="{Binding TemplateCount}" FontWeight="Bold" />
+  </Grid>
+</UserControl>

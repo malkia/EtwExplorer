@@ -1,4 +1,4 @@
-﻿using System.Windows;
+﻿using Avalonia.Controls;
 
 namespace EtwExplorer.Infrastructure {
 	sealed class DialogService : IDialogService {
@@ -9,9 +9,6 @@ namespace EtwExplorer.Infrastructure {
 			var viewModel = (TViewModel?)Activator.CreateInstance(typeof(TViewModel), window)
 				?? throw new InvalidOperationException($"Could not create {typeof(TViewModel).Name}");
 			window.DataContext = viewModel;
-			window.Owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive) ?? Application.Current?.MainWindow;
-			if (window.Owner != null)
-				window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 			return viewModel;
 		}
 	}

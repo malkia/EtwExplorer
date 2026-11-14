@@ -1,12 +1,8 @@
-﻿using System.Windows.Controls;
+﻿using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 
 namespace EtwExplorer.Views {
-	/// <summary>
-	/// Interaction logic for SummaryTabView.xaml
-	/// </summary>
 	public partial class SummaryTabView : UserControl {
-		public SummaryTabView() {
-			InitializeComponent();
-		}
+		public SummaryTabView() => AvaloniaXamlLoader.Load(this);
 	}
 }

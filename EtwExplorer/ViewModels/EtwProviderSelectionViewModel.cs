@@ -1,24 +1,24 @@
-﻿using EtwExplorer.Infrastructure;
+﻿using Avalonia.Collections;
+using Avalonia.Controls;
+using EtwExplorer.Infrastructure;
 using Microsoft.Diagnostics.Tracing.Session;
-using System.Windows;
-using System.Windows.Data;
 
 namespace EtwExplorer.ViewModels {
 	sealed record Provider(string Name, Guid Guid) {
-		/// <summary>Registered providers with manifest-style names have no spaces in them.</summary>
 		public bool IsLikelyName => !Name.Contains(' ');
 	}
 
 	sealed class EtwProviderSelectionViewModel : DialogViewModelBase {
 		static readonly Provider[] _providers = [.. TraceEventProviders.GetPublishedProviders()
 			.Select(g => new Provider(TraceEventProviders.GetProviderName(g), g))];
+		readonly DataGridCollectionView _providerView;
 
 		public EtwProviderSelectionViewModel(Window dialog) : base(dialog) {
-			CollectionViewSource.GetDefaultView(Providers).Filter = null;
+			_providerView = new DataGridCollectionView(_providers) { Filter = FilterProvider };
 			IsLikely = true;
 		}
 
-		public IEnumerable<Provider> Providers => _providers;
+		public DataGridCollectionView ProviderView => _providerView;
 
 		Provider? _selectedProvider;
 		public Provider? SelectedProvider {
@@ -30,19 +30,8 @@ namespace EtwExplorer.ViewModels {
 		public string? SearchText {
 			get => _searchText;
 			set {
-				if (SetProperty(ref _searchText, value)) {
-					var cvs = CollectionViewSource.GetDefaultView(Providers);
-					if (string.IsNullOrWhiteSpace(_searchText)) {
-						cvs.Filter = IsLikely ? obj => ((Provider)obj).IsLikelyName : null;
-					}
-					else {
-						string text = _searchText.ToLower();
-						cvs.Filter = obj => {
-							var provider = (Provider)obj;
-							return provider.Name.ToLower().Contains(text) || provider.Guid.ToString().ToLower().Contains(text);
-						};
-					}
-				}
+				if (SetProperty(ref _searchText, value))
+					_providerView.Refresh();
 			}
 		}
 
@@ -56,21 +45,22 @@ namespace EtwExplorer.ViewModels {
 		public bool IsLikely {
 			get => _isLikely;
 			set {
-				if (SetProperty(ref _isLikely, value)) {
-					var cvs = CollectionViewSource.GetDefaultView(Providers);
-					if (!string.IsNullOrWhiteSpace(SearchText))
-						return;
-					cvs.Filter = IsLikely ? obj => ((Provider)obj).IsLikelyName : null;
-
-				}
+				if (SetProperty(ref _isLikely, value))
+					_providerView.Refresh();
 			}
 		}
 
-		protected override void OnOK() {
-			if (SelectedProvider == null)
-				return;
+		bool FilterProvider(object item) {
+			var provider = (Provider)item;
+			if (string.IsNullOrWhiteSpace(SearchText))
+				return !IsLikely || provider.IsLikelyName;
+			return provider.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+				|| provider.Guid.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+		}
 
-			base.OnOK();
+		protected override void OnOK() {
+			if (SelectedProvider != null)
+				base.OnOK();
 		}
 	}
 }

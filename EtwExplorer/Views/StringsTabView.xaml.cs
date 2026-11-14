@@ -1,10 +1,8 @@
-﻿namespace EtwExplorer.Views {
-	/// <summary>
-	/// Interaction logic for StringsTab.xaml
-	/// </summary>
-	public partial class StringsTabView {
-		public StringsTabView() {
-			InitializeComponent();
-		}
+﻿using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+
+namespace EtwExplorer.Views {
+	public partial class StringsTabView : UserControl {
+		public StringsTabView() => AvaloniaXamlLoader.Load(this);
 	}
 }

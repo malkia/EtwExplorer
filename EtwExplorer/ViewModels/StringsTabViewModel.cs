@@ -1,40 +1,38 @@
-﻿using EtwManifestParsing;
-using System.Windows.Data;
+﻿using Avalonia.Collections;
+using EtwManifestParsing;
 
 namespace EtwExplorer.ViewModels {
 	sealed class StringsTabViewModel : TabViewModelBase {
 		public sealed record Item(string Name, string Value);
 
 		public override string Icon => "/icons/strings.ico";
-
 		public override string Header => "Strings";
 
+		readonly DataGridCollectionView _stringView;
 		public StringsTabViewModel(EtwManifest manifest) {
-			Strings = manifest.StringTable is { } table
-				? [.. table.Select(pair => new Item(pair.Key, pair.Value))]
+			var strings = manifest.StringTable is { } table
+				? table.Select(pair => new Item(pair.Key, pair.Value)).ToArray()
 				: [];
+			_stringView = new DataGridCollectionView(strings) { Filter = FilterString };
 		}
 
-		public Item[] Strings { get; }
+		public DataGridCollectionView StringView => _stringView;
 
 		string? _searchText;
 		public string? SearchText {
 			get => _searchText;
 			set {
-				if (SetProperty(ref _searchText, value)) {
-					var cvs = CollectionViewSource.GetDefaultView(Strings);
-					if (string.IsNullOrWhiteSpace(_searchText))
-						cvs.Filter = null;
-					else {
-						string text = _searchText.ToLower();
-						cvs.Filter = obj => {
-							var item = (Item)obj;
-							return item.Name.ToLower().Contains(text) || item.Value.ToLower().Contains(text);
-						};
-					}
-				}
+				if (SetProperty(ref _searchText, value))
+					_stringView.Refresh();
 			}
 		}
 
+		bool FilterString(object value) {
+			if (string.IsNullOrWhiteSpace(SearchText))
+				return true;
+			var item = (Item)value;
+			return item.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+				|| item.Value.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+		}
 	}
 }

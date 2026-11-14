@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using System.Windows.Input;
 
 namespace EtwExplorer.Infrastructure {
@@ -14,14 +16,14 @@ namespace EtwExplorer.Infrastructure {
 		public ICommand OKCommand { get; }
 		public ICommand CancelCommand { get; }
 
-		public bool? ShowDialog() => Dialog.ShowDialog();
-
-		protected virtual void OnOK() {
-			Dialog.DialogResult = true;
+		public Task<bool?> ShowDialogAsync() {
+			var owner = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow
+				?? throw new InvalidOperationException("A desktop window is required to show the provider dialog.");
+			return Dialog.ShowDialog<bool?>(owner);
 		}
 
-		protected virtual void OnCancel() {
-			Dialog.DialogResult = false;
-		}
+		protected virtual void OnOK() => Dialog.Close(true);
+
+		protected virtual void OnCancel() => Dialog.Close(false);
 	}
 }

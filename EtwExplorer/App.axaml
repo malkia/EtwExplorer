@@ -1,0 +1,17 @@
+<Application x:Class="EtwExplorer.App"
+			 xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:vm="using:EtwExplorer.ViewModels"
+			 xmlns:view="using:EtwExplorer.Views">
+  <Application.Styles>
+	<FluentTheme />
+	<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+  </Application.Styles>
+  <Application.DataTemplates>
+	<DataTemplate DataType="vm:SummaryTabViewModel"><view:SummaryTabView /></DataTemplate>
+	<DataTemplate DataType="vm:EventsTabViewModel"><view:EventsTabView /></DataTemplate>
+	<DataTemplate DataType="vm:KeywordsTabViewModel"><view:KeywordsTabView /></DataTemplate>
+	<DataTemplate DataType="vm:StringsTabViewModel"><view:StringsTabView /></DataTemplate>
+	<DataTemplate DataType="vm:XmlTabViewModel"><view:XmlTabView /></DataTemplate>
+  </Application.DataTemplates>
+</Application>

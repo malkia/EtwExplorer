@@ -9,8 +9,8 @@ ETW Explorer attempts to show these events with a simple GUI.
 
 ## Requirements
 
-- Windows 10/11 (the app is WPF and reads provider metadata through ETW and WMI)
-- [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) to build, or the .NET 11 Desktop Runtime to run a published build
+- Windows 10/11 for ETW provider discovery and WMI metadata. The Avalonia UI is cross-platform, but the current provider data sources are Windows-only.
+- [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) to build, or the .NET 11 Runtime to run a published build
 - Visual Studio 2026 (optional) with the **.NET desktop development** workload
 
 ## Building
@@ -20,12 +20,12 @@ dotnet build EtwExplorer.sln -c Release
 dotnet run --project EtwExplorer
 ```
 
-The solution contains two SDK-style projects targeting `net11.0-windows`:
+The solution contains two SDK-style projects targeting `net11.0`:
 
 | Project | Description |
 |---------|-------------|
 | `EtwManifestParsing` | Library that turns a registered provider's manifest XML, or a classic MOF provider's WMI `EventTrace` class tree, into an `EtwManifest` model |
-| `EtwExplorer` | WPF front end (MahApps.Metro + Prism.Core) |
+| `EtwExplorer` | Avalonia desktop front end (Fluent theme + Prism.Core) |
 
 Shared build settings (version, nullable reference types, implicit usings) live in `Directory.Build.props`; code style is defined in `.editorconfig`.
 

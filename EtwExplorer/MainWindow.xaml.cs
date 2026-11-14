@@ -1,10 +1,11 @@
-﻿namespace EtwExplorer {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
-	public partial class MainWindow {
+﻿using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+
+namespace EtwExplorer {
+	public partial class MainWindow : Window {
 		public MainWindow() {
-			InitializeComponent();
+			AvaloniaXamlLoader.Load(this);
+			Title = Constants.WindowTitle;
 		}
 	}
 }
