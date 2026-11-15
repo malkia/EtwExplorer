@@ -5,7 +5,6 @@ using EtwManifestParsing;
 using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Diagnostics.Tracing.Session;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Windows.Input;
 
 namespace EtwExplorer.ViewModels {

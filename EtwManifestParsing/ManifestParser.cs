@@ -1,8 +1,8 @@
 ﻿using Microsoft.Diagnostics.Tracing.Session;
 using System.Management;
-using EnumerationOptions = System.Management.EnumerationOptions;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using EnumerationOptions = System.Management.EnumerationOptions;
 
 namespace EtwManifestParsing {
 	public static class ManifestParser {
