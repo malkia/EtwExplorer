@@ -1,11 +1,9 @@
 <UserControl x:Class="EtwExplorer.Views.StringsTabView"
 			 xmlns="https://github.com/avaloniaui"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:view="using:EtwExplorer.Views">
   <Grid RowDefinitions="Auto,*" Margin="8">
-	<StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
-	  <TextBlock Text="Search:" VerticalAlignment="Center" />
-	  <TextBox Width="300" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Watermark="Type to search" />
-	</StackPanel>
+	<view:SearchBox Margin="0,0,0,8" />
 	<DataGrid Grid.Row="1" ItemsSource="{Binding StringView}" AutoGenerateColumns="False" IsReadOnly="True">
 	  <DataGrid.Columns>
 		<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />

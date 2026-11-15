@@ -1,11 +1,11 @@
 <Window x:Class="EtwExplorer.Views.EtwProviderSelectionDialog"
 		xmlns="https://github.com/avaloniaui"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:view="using:EtwExplorer.Views"
 		Title="Select ETW Provider" Width="760" Height="540" MinWidth="600" MinHeight="400">
   <Grid RowDefinitions="Auto,*,Auto" Margin="8">
 	<StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
-	  <TextBlock Text="Search:" VerticalAlignment="Center" />
-	  <TextBox Width="220" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Watermark="Type to search" />
+	  <view:SearchBox TextBoxWidth="220" />
 	  <CheckBox Content="Likely Existing Manifests" IsChecked="{Binding IsLikely}" VerticalAlignment="Center" />
 	  <CheckBox Content="Close Current Manifest" IsChecked="{Binding CloseCurrentManifest}" VerticalAlignment="Center" />
 	</StackPanel>

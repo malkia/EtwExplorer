@@ -1,11 +1,11 @@
 ﻿using Avalonia.Collections;
+using EtwExplorer.Infrastructure;
 using EtwManifestParsing;
 
 namespace EtwExplorer.ViewModels {
 	sealed class StringsTabViewModel : TabViewModelBase {
 		public sealed record Item(string Name, string Value);
 
-		public override string Icon => "/icons/strings.ico";
 		public override string Header => "Strings";
 
 		readonly DataGridCollectionView _stringView;
@@ -31,8 +31,7 @@ namespace EtwExplorer.ViewModels {
 			if (string.IsNullOrWhiteSpace(SearchText))
 				return true;
 			var item = (Item)value;
-			return item.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
-				|| item.Value.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+			return item.Name.ContainsIgnoreCase(SearchText) || item.Value.ContainsIgnoreCase(SearchText);
 		}
 	}
 }

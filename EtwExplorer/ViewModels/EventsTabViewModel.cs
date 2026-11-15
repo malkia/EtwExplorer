@@ -1,9 +1,9 @@
 ﻿using Avalonia.Collections;
+using EtwExplorer.Infrastructure;
 using EtwManifestParsing;
 
 namespace EtwExplorer.ViewModels {
 	sealed class EventsTabViewModel : TabViewModelBase {
-		public override string Icon => "/icons/events.ico";
 		public override string Header => "Events";
 
 		readonly DataGridCollectionView _eventView;
@@ -27,9 +27,7 @@ namespace EtwExplorer.ViewModels {
 			if (string.IsNullOrWhiteSpace(SearchText))
 				return true;
 			var evt = ((EtwEventViewModel)item).Event;
-			return Matches(evt.Symbol, SearchText) || Matches(evt.Opcode, SearchText) || Matches(evt.Task, SearchText);
+			return evt.Symbol.ContainsIgnoreCase(SearchText) || evt.Opcode.ContainsIgnoreCase(SearchText) || evt.Task.ContainsIgnoreCase(SearchText);
 		}
-
-		static bool Matches(string? value, string text) => value?.Contains(text, StringComparison.OrdinalIgnoreCase) == true;
 	}
 }

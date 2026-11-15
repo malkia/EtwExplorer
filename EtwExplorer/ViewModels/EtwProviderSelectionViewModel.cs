@@ -54,8 +54,7 @@ namespace EtwExplorer.ViewModels {
 			var provider = (Provider)item;
 			if (string.IsNullOrWhiteSpace(SearchText))
 				return !IsLikely || provider.IsLikelyName;
-			return provider.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
-				|| provider.Guid.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+			return provider.Name.ContainsIgnoreCase(SearchText) || provider.Guid.ToString().ContainsIgnoreCase(SearchText);
 		}
 
 		protected override void OnOK() {

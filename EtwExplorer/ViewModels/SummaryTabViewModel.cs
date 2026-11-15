@@ -2,8 +2,6 @@
 
 namespace EtwExplorer.ViewModels {
 	sealed class SummaryTabViewModel : TabViewModelBase {
-		public override string Icon => "/icons/summary.ico";
-
 		public override string Header => "Summary";
 
 		readonly EtwManifest _manifest;

@@ -20,5 +20,10 @@
 		public string? GetString(string messageId) {
 			return StringTable != null && StringTable.TryGetValue(messageId, out var value) ? value : null;
 		}
+
+		/// <summary>Resolves a "$(string.Foo)" message reference through the string table; any other text is returned as is.</summary>
+		internal string? ResolveMessage(string? message) {
+			return message != null && message.StartsWith('$') ? GetString(message[9..^1]) : message;
+		}
 	}
 }

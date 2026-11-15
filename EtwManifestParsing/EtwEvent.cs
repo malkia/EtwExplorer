@@ -1,7 +1,4 @@
 ﻿namespace EtwManifestParsing {
-	public enum EventLevel {
-	}
-
 	public sealed class EtwEvent {
 		public int Value { get; internal set; }
 		public string? Symbol { get; internal set; }

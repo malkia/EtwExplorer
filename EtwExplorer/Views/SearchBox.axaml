@@ -1,0 +1,9 @@
+<UserControl x:Class="EtwExplorer.Views.SearchBox"
+			 xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:view="using:EtwExplorer.Views">
+  <StackPanel Orientation="Horizontal" Spacing="8">
+	<TextBlock Text="Search:" VerticalAlignment="Center" />
+	<TextBox Width="{Binding TextBoxWidth, RelativeSource={RelativeSource AncestorType=view:SearchBox}}" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Watermark="Type to search" />
+  </StackPanel>
+</UserControl>

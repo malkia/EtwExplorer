@@ -123,7 +123,7 @@ namespace EtwManifestParsing {
 				var keywords = element.Descendants(ns + "keyword").Select(node => new EtwKeyword {
 					Name = node.Attribute("name")!.Value,
 					Mask = ulong.Parse(node.Attribute("mask")!.Value[2..], System.Globalization.NumberStyles.HexNumber),
-					Message = GetMessageString(manifest, (string?)node.Attribute("message"))
+					Message = manifest.ResolveMessage((string?)node.Attribute("message"))
 				});
 
 				manifest.Keywords = [.. keywords];
@@ -146,14 +146,6 @@ namespace EtwManifestParsing {
 				return string.Empty;
 			var value = attribute.Value;
 			return value[(value.IndexOf(':') + 1)..];
-		}
-
-		private static string? GetMessageString(EtwManifest manifest, string? message) {
-			if (message != null && message.StartsWith('$')) {
-				// $(string.Foo) -> Foo
-				return manifest.GetString(message[9..^1]);
-			}
-			return message;
 		}
 
 		public static EtwManifest Parse(string xml) {
@@ -474,7 +466,6 @@ namespace EtwManifestParsing {
 
 			var orderedQualifierList = new List<string>();
 			foreach (var nextQualifierInOrder in qualifierOrder) {
-				var foundQualifier = string.Empty;
 				foreach (var qualifier in qualifierList) {
 					if (qualifier.ToLower().StartsWith(nextQualifierInOrder)) {
 						orderedQualifierList.Add(qualifier);

@@ -21,14 +21,9 @@ namespace EtwManifestParsing {
 
 			Opcodes = [.. element.Descendants("opcode").Select(node => new EtwOpcode {
 				Name = node.Attribute("name")!.Value,
-				Message = GetString((string?)node.Attribute("message"), manifest),
+				Message = manifest.ResolveMessage((string?)node.Attribute("message")),
 				Value = (int)node.Attribute("value")!
 			})];
-		}
-
-		private static string? GetString(string? name, EtwManifest manifest) {
-			// $(string.Foo) -> Foo
-			return name is null ? null : manifest.GetString(name[9..^1]);
 		}
 
 		public override string ToString() => $"{Name} {Value} {Opcodes.Length} opcodes";
